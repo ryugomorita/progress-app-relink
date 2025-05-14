@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Task } from "@/types/task";
 import { useAuth } from "@/context/AuthContext";
-import { useSWRConfig } from "swr";
+import { useTaskMutate } from "@/hooks/useTaskMutate";
 
 type TaskTreeProps = {
     task: Task;
@@ -18,7 +18,7 @@ export default function TaskTree({ task }: TaskTreeProps) {
     const [newTitle, setNewTitle] = useState("");
     const [newDescription, setNewDescription] = useState("");
     const { token } = useAuth();
-    const { mutate } = useSWRConfig();
+    const refreshTasks = useTaskMutate(); // ✅ mutate フック取得
 
     const toggle = () => setIsOpen((prev) => !prev);
 
@@ -58,7 +58,7 @@ export default function TaskTree({ task }: TaskTreeProps) {
                                     throw new Error("ステータス更新に失敗しました");
                                 }
 
-                                mutate("/api/tasks/hierarchy");
+                                refreshTasks();
                             } catch (error) {
                                 console.error(error);
                                 alert("ステータス更新時にエラーが発生しました");
@@ -121,7 +121,7 @@ export default function TaskTree({ task }: TaskTreeProps) {
                                     }
 
                                     // alert("削除成功！");
-                                    mutate("/api/tasks/hierarchy");
+                                    refreshTasks();
                                 } catch (error) {
                                     console.error(error);
                                     alert("削除時にエラーが発生しました");
@@ -166,7 +166,7 @@ export default function TaskTree({ task }: TaskTreeProps) {
 
                                         // alert("更新成功！");
                                         setIsEditing(false);
-                                        mutate("/api/tasks/hierarchy");
+                                        refreshTasks();
                                     } catch (error) {
                                         console.error(error);
                                         alert("更新時にエラーが発生しました");
@@ -241,7 +241,7 @@ export default function TaskTree({ task }: TaskTreeProps) {
                                     setIsAdding(false);
                                     setNewTitle("");
                                     setNewDescription("");
-                                    mutate("/api/tasks/hierarchy"); // ✅ ここで更新！
+                                    refreshTasks(); // ✅ ここで更新！
                                 } catch (error) {
                                     console.error(error);
                                     alert("追加時にエラーが発生しました");

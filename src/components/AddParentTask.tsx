@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
-import { useSWRConfig } from "swr";
+import { useTaskMutate } from "@/hooks/useTaskMutate";
 
 type AddParentTaskProps = {
     closeModal: () => void;
@@ -12,7 +12,7 @@ export default function AddParentTask({ closeModal }: AddParentTaskProps) {
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
     const { token } = useAuth();
-    const { mutate } = useSWRConfig();
+    const refreshTasks = useTaskMutate(); // ✅ mutate フック取得
 
     const handleAddTask = async () => {
         if (!token) {
@@ -42,7 +42,7 @@ export default function AddParentTask({ closeModal }: AddParentTaskProps) {
 
             setTitle("");
             setDescription("");
-            mutate("/api/tasks/hierarchy");
+            refreshTasks(); // ✅ 共通化した関数を使う
             closeModal(); // ✅ モーダル閉じる
         } catch (error) {
             console.error(error);
